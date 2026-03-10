@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Announcement Popups</h1>
+        <a href="{{ path('admin_announcement_popup_new') }}" class="btn btn-primary">+ Nouveau</a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Titre (EN)</th>
+                <th>Titre (FR)</th>
+                <th>Priorité</th>
+                <th>Actif</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for popup in popups %}
+            <tr>
+                <td>{{ popup.title }}</td>
+                <td>{{ popup.titleFr ?? '-' }}</td>
+                <td>{{ popup.priority }}</td>
+                <td>{{ popup.active ? '✅' : '❌' }}</td>
+                <td>
+                    <a href="{{ path('admin_announcement_popup_edit', {id: popup.id}) }}" class="btn btn-sm btn-secondary">Éditer</a>
+                    <form method="post" action="{{ path('admin_announcement_popup_toggle', {id: popup.id}) }}" style="display:inline">
+                        <button class="btn btn-sm btn-outline-secondary">
+                            {{ popup.active ? 'Désactiver' : 'Activer' }}
+                        </button>
+                    </form>
+                    <form method="post" action="{{ path('admin_announcement_popup_delete', {id: popup.id}) }}" style="display:inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_announcement_' ~ popup.id) }}">
+                        <button class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ?')">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
