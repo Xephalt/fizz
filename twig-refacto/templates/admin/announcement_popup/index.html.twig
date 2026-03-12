@@ -1,0 +1,95 @@
+{% extends ea.templatePath('layout') %}
+
+{% block content_title %}
+    <div class="d-flex align-items-center justify-content-between w-100">
+        <span>
+            <i class="fa fa-bell me-2 text-success"></i>
+            {{ locale == 'fr' ? 'Annonces Popup' : 'Announcement Popups' }}
+        </span>
+        <a href="{{ path('admin_announcement_popup_new') }}" class="btn btn-success btn-sm px-3">
+            <i class="fa fa-plus me-1"></i>
+            {{ locale == 'fr' ? 'Nouveau' : 'New' }}
+        </a>
+    </div>
+{% endblock %}
+
+{% block main %}
+
+    {# ---- Flash messages ---- #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="fa fa-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    {# ---- Table ---- #}
+    {% if popups is empty %}
+        <div class="text-center py-5 text-muted">
+            <i class="fa fa-bell-slash fa-3x mb-3"></i>
+            <p class="mb-0">{{ locale == 'fr' ? 'Aucune annonce pour le moment.' : 'No announcements yet.' }}</p>
+        </div>
+    {% else %}
+        <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">{{ locale == 'fr' ? 'Titre (EN)' : 'Title (EN)' }}</th>
+                        <th>{{ locale == 'fr' ? 'Titre (FR)' : 'Title (FR)' }}</th>
+                        <th class="text-center">{{ locale == 'fr' ? 'Priorité' : 'Priority' }}</th>
+                        <th class="text-center">{{ locale == 'fr' ? 'Actif' : 'Active' }}</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for popup in popups %}
+                        <tr>
+                            <td class="ps-4 fw-semibold">{{ popup.title }}</td>
+                            <td class="text-muted">{{ popup.titleFr ?? '—' }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary rounded-pill">{{ popup.priority }}</span>
+                            </td>
+                            <td class="text-center">
+                                <form method="post"
+                                      action="{{ path('admin_announcement_popup_toggle', {id: popup.id}) }}"
+                                      class="d-inline">
+                                    <button type="submit"
+                                            class="btn btn-sm border-0 p-0"
+                                            title="{{ popup.active ? 'Désactiver' : 'Activer' }}">
+                                        {% if popup.active %}
+                                            <span class="badge bg-success" style="font-size:.8rem;">
+                                                <i class="fa fa-circle me-1"></i>ON
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-light text-secondary border" style="font-size:.8rem;">
+                                                <i class="fa fa-circle me-1"></i>OFF
+                                            </span>
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{{ path('admin_announcement_popup_edit', {id: popup.id}) }}"
+                                   class="btn btn-outline-secondary btn-sm me-1"
+                                   title="{{ locale == 'fr' ? 'Éditer' : 'Edit' }}">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                                <form method="post"
+                                      action="{{ path('admin_announcement_popup_delete', {id: popup.id}) }}"
+                                      class="d-inline"
+                                      onsubmit="return confirm('{{ locale == 'fr' ? 'Supprimer cette annonce ?' : 'Delete this announcement?' }}')">
+                                    <input type="hidden" name="_token"
+                                           value="{{ csrf_token('delete_announcement_' ~ popup.id) }}">
+                                    <button class="btn btn-outline-danger btn-sm" title="{{ locale == 'fr' ? 'Supprimer' : 'Delete' }}">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+{% endblock %}

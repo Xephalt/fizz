@@ -1,0 +1,74 @@
+{% extends ea.templatePath('layout') %}
+
+{% block content_title %}
+    <i class="fa fa-pencil me-2 text-secondary"></i>
+    {{ locale == 'fr' ? 'Modifier l\'annonce' : 'Edit Announcement' }} — <span class="text-muted fw-normal">{{ popup.title }}</span>
+{% endblock %}
+
+{% block page_actions %}
+    <a href="{{ path('admin_announcement_popup_index') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="fa fa-arrow-left me-1"></i>
+        {{ locale == 'fr' ? 'Retour à la liste' : 'Back to list' }}
+    </a>
+{% endblock %}
+
+{% block main %}
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+            {{ form_start(form, { attr: { class: 'row g-3' } }) }}
+
+                {# ---- EN ---- #}
+                <div class="col-12">
+                    <h6 class="text-uppercase text-muted fw-semibold mb-3" style="font-size:.75rem; letter-spacing:.08em;">
+                        <i class="fa fa-globe me-1"></i>English
+                    </h6>
+                </div>
+                <div class="col-md-8">
+                    {{ form_row(form.title) }}
+                </div>
+                <div class="col-md-4">
+                    {{ form_row(form.imageUrl) }}
+                </div>
+                <div class="col-12">
+                    {{ form_row(form.content) }}
+                </div>
+
+                <hr class="my-2">
+
+                {# ---- FR ---- #}
+                <div class="col-12">
+                    <h6 class="text-uppercase text-muted fw-semibold mb-3" style="font-size:.75rem; letter-spacing:.08em;">
+                        <i class="fa fa-globe me-1"></i>Français
+                    </h6>
+                </div>
+                <div class="col-md-8">
+                    {{ form_row(form.titleFr) }}
+                </div>
+                <div class="col-md-4">
+                    {{ form_row(form.imageUrlFr) }}
+                </div>
+                <div class="col-12">
+                    {{ form_row(form.contentFr) }}
+                </div>
+
+                <hr class="my-2">
+
+                {# ---- Settings ---- #}
+                <div class="col-md-3">
+                    {{ form_row(form.priority) }}
+                </div>
+                <div class="col-md-3 d-flex align-items-center pt-3">
+                    {{ form_row(form.isActive) }}
+                </div>
+
+                <div class="col-12 mt-2">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="fa fa-save me-1"></i>
+                        {{ locale == 'fr' ? 'Enregistrer' : 'Save' }}
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

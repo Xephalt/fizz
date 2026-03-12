@@ -1,0 +1,37 @@
+{% extends '@!EasyAdmin/menu.html.twig' %}
+
+{% block main_menu_before %}
+    <div class="d-flex overflow-hidden font-open text-sm rounded mb-4 my-3" style="background-color:#f2f2f2;">
+
+        <h3 class="menu-h3 text-lg">
+            {{ locale == 'fr' ? 'Console d\'administration' : 'Admin Dashboard' }}
+        </h3>
+
+        {# Bouton fermeture sidebar mobile #}
+        <button id="close-sidebar" class="close-sidebar-button hide-on-large" style="width:100%; top:20px;">
+            &times;
+        </button>
+
+        {# ---- Lien custom : Announcement Popups ---- #}
+        <a href="{{ path('admin_announcement_popup_index') }}"
+           class="d-flex align-items-center px-3 py-2 font-open text-sm text-dark hover:bg-gray-100 rounded"
+           style="gap:8px; text-decoration:none;">
+            <i class="fa fa-bell" style="width:16px; text-align:center;"></i>
+            {{ locale == 'fr' ? 'Annonces popup' : 'Announcement Popups' }}
+        </a>
+        {# ------------------------------------------ #}
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const closeBtn = document.getElementById('close-sidebar');
+            if (!closeBtn) return;
+
+            closeBtn.addEventListener('click', function () {
+                document.body.classList.remove('ea-mobile-sidebar-visible');
+                document.querySelector('.modal-backdrop.fade.show')?.remove();
+            });
+        });
+    </script>
+{% endblock %}
