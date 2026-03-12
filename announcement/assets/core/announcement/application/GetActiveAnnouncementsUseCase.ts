@@ -1,24 +1,26 @@
 import { AnnouncementPopup } from '../domain/AnnouncementPopup'
+import { AnnouncementDismissalRepository } from '../domain/AnnouncementDismissalRepository'
 import { fetchActiveAnnouncementPopups } from '../infrastructure/AnnouncementPopupApi'
+import { localStorageAnnouncementDismissalRepository } from '../infrastructure/LocalStorageAnnouncementDismissalRepository'
 
-const DISMISSED_KEY_PREFIX = 'announcement_dismissed_'
+// Composition root léger : on câble l'adapter par défaut ici.
+// Si tu veux l'injecter (tests), tu passes un autre repo.
+const dismissalRepo: AnnouncementDismissalRepository = localStorageAnnouncementDismissalRepository
 
 export function isDismissed(id: string): boolean {
-  return localStorage.getItem(`${DISMISSED_KEY_PREFIX}${id}`) === 'true'
+  return dismissalRepo.isDismissed(id)
 }
 
 export function dismiss(id: string): void {
-  localStorage.setItem(`${DISMISSED_KEY_PREFIX}${id}`, 'true')
-}
-
-export async function dismissAll(): Promise<void> {
-  const all = await fetchActiveAnnouncementPopups()
-  all.forEach((popup) => dismiss(popup.id))
+  dismissalRepo.dismiss(id)
 }
 
 export async function getVisibleAnnouncementPopups(): Promise<AnnouncementPopup[]> {
   const all = await fetchActiveAnnouncementPopups()
-  // Le back renvoie déjà trié par priority ASC
-  // On filtre côté front ceux déjà vus sur ce navigateur
-  return all.filter((popup) => !isDismissed(popup.id))
+  return all.filter((popup) => !dismissalRepo.isDismissed(popup.id))
+}
+
+export async function dismissAll(): Promise<void> {
+  const all = await fetchActiveAnnouncementPopups()
+  dismissalRepo.dismissAll(all.map((p) => p.id))
 }

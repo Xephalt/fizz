@@ -1,71 +1,87 @@
-import React from 'react'
-import BasicModal from './BasicModal'
-import { AnnouncementPopup } from '../../core/announcement'
-import { useTranslation } from 'react-i18next'
+import React from 'react';
+import BasicModal, { ModalCloseButton } from './BasicModal';
+import { AnnouncementPopup } from '../../core/announcement';
+import LanguageDropdown from './LanguageDropdown';
+import { t } from 'i18next';
 
 interface Props {
-  popup: AnnouncementPopup
-  currentIndex: number
-  total: number
-  onNext: () => void
-  onPrev: () => void
-  onFinish: () => void
+  popup: AnnouncementPopup;
+  currentIndex: number;
+  total: number;
+  onNext: () => void;
+  onPrev: () => void;
+  onFinish: () => void;
+  onFinishAll: () => Promise<void>;
 }
 
-export function AnnouncementPopupModal({ popup, currentIndex, total, onNext, onPrev, onFinish }: Props) {
-  const { i18n } = useTranslation()
-  const isFr = i18n.language?.startsWith('fr')
-
-  const isFirst = currentIndex === 0
-  const isLast = currentIndex === total - 1
-
-  const displayTitle = isFr && popup.titleFr ? popup.titleFr : popup.title
-  const displayContent = isFr && popup.contentFr ? popup.contentFr : popup.content
-  const displayImageUrl = isFr && popup.imageUrlFr ? popup.imageUrlFr : popup.imageUrl
+export function AnnouncementPopupModal({
+  popup,
+  currentIndex,
+  total,
+  onNext,
+  onPrev,
+  onFinish,
+  onFinishAll,
+}: Props) {
+  const isFirst = currentIndex === 0;
+  const isLast = currentIndex === total - 1;
 
   return (
-    <BasicModal open={true} onClose={onFinish} removeButtons={true} setOpen={onFinish}>
+    <BasicModal
+      open={true}
+      onClose={onFinishAll}
+      removeButtons={true}
+      setOpen={onFinish}
+    >
       <div className="flex flex-col h-full">
-
         {/* Header */}
-        <div className="flex items-center justify-center mb-6">
-          <h2 className="text-xl font-bold text-bnpp-color-green text-center">
-            Astuces et nouveautés CommsGPT !
+        <div className="flex items-center justify-between mb-6 relative bg-gray-100 p-4 rounded-md">
+          {/* Sélecteur de langue */}
+          <LanguageDropdown />
+          {/* Titre centré */}
+          <h2 className="flex-1 mx-4 text-xl font-bold bnpp-color-green text-center">
+            {t('CommsGptTips')}
           </h2>
+          {/* Bouton de fermeture du parent */}
+          <ModalCloseButton />
         </div>
 
         {/* Titre astuce */}
         <h3 className="text-lg font-semibold mb-4">
-          {currentIndex + 1} - {displayTitle}
+          {popup.title}
         </h3>
 
-        {/* Body 60/40 */}
-        <div className="flex flex-row flex-1 gap-4 min-h-0">
-
-          {/* Image 60% */}
-          <div className="w-3/5 bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
-            {displayImageUrl ? (
+        {/* Body 60/40 — responsive, évite le débordement vertical */}
+        <div className="flex flex-col md:flex-row flex-1 gap-4 min-h-0">
+          <div
+            className="
+              w-full md:w-3/5
+              flex items-center justify-center
+              bg-gray-50 rounded-lg overflow-hidden border border-gray-200
+              aspect-w-16 aspect-h-9
+              max-h-[350px]
+            "
+          >
+            {popup.imageUrl ? (
               <img
-                src={displayImageUrl}
+                src={popup.imageUrl}
                 alt=""
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-300">
-                <i className="fa fa-image fa-3x" />
+              <div className="w-full h-full flex items-center justify-center">
+                <i className="fa fa-image fa-3x text-gray-300" />
               </div>
             )}
           </div>
 
-          {/* Description 40% */}
-          <div className="w-2/5 flex flex-col">
+          <div className="w-full md:w-2/5 flex flex-col bg-gray-100 p-4 rounded-md overflow-y-auto">
             <p className="font-bold text-base mb-2">Description</p>
             <div
               className="text-sm text-gray-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: displayContent }}
+              dangerouslySetInnerHTML={{ __html: popup.content }}
             />
           </div>
-
         </div>
 
         {/* Footer */}
@@ -85,9 +101,10 @@ export function AnnouncementPopupModal({ popup, currentIndex, total, onNext, onP
           {isLast ? (
             <button
               onClick={onFinish}
-              className="text-sm font-medium text-bnpp-color-green hover:underline"
+              className="text-sm font-medium text-bnpp-color-green hover:underline flex items-center"
+              aria-label="Terminer"
             >
-              Terminer
+              <i className="fa-solid fa-check" />
             </button>
           ) : (
             <button
@@ -98,8 +115,7 @@ export function AnnouncementPopupModal({ popup, currentIndex, total, onNext, onP
             </button>
           )}
         </div>
-
       </div>
     </BasicModal>
-  )
+  );
 }

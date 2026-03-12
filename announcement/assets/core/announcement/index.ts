@@ -1,2 +1,3 @@
 export type { AnnouncementPopup } from './domain/AnnouncementPopup'
-export { getVisibleAnnouncementPopups, dismiss, isDismissed, dismissAll } from './application/GetActiveAnnouncementsUseCase'
+export type { AnnouncementDismissalRepository } from './domain/AnnouncementDismissalRepository'
+export { getVisibleAnnouncementPopups, dismiss, dismissAll, isDismissed } from './application/GetActiveAnnouncementsUseCase'

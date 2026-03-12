@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { AnnouncementPopup, dismiss, getVisibleAnnouncementPopups } from '../../core/announcement'
+import { AnnouncementPopup, dismiss, dismissAll, getVisibleAnnouncementPopups } from '../../core/announcement'
 
 interface UseAnnouncementPopupsReturn {
   current: AnnouncementPopup | null
@@ -8,6 +8,7 @@ interface UseAnnouncementPopupsReturn {
   next: () => void
   prev: () => void
   finish: () => void
+  finishAll: () => Promise<void>
 }
 
 export function useAnnouncementPopups(): UseAnnouncementPopupsReturn {
@@ -43,11 +44,19 @@ export function useAnnouncementPopups(): UseAnnouncementPopupsReturn {
 
   const prev = () => {
     if (currentIndex > 0) {
+      // On revient en arrière — déjà vue, déjà dismissée, rien à faire
       setCurrentIndex((i) => i - 1)
     }
   }
 
+  // Ferme la modale (popups non vues restent disponibles au prochain reload)
   const finish = () => setQueue([])
 
-  return { current, queue, currentIndex, next, prev, finish }
+  // Ferme ET dismiss toutes les popups restantes — utilisé par la croix / fermeture explicite
+  const finishAll = async () => {
+    await dismissAll()
+    setQueue([])
+  }
+
+  return { current, queue, currentIndex, next, prev, finish, finishAll }
 }
