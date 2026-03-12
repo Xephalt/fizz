@@ -1,0 +1,1 @@
+git diff --name-only --diff-filter=D | xargs git restore
