@@ -2,7 +2,7 @@ import React from 'react';
 import BasicModal, { ModalCloseButton } from './BasicModal';
 import { AnnouncementPopup } from '../../core/announcement';
 import LanguageDropdown from './LanguageDropdown';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   popup: AnnouncementPopup;
@@ -23,8 +23,17 @@ export function AnnouncementPopupModal({
   onFinish,
   onFinishAll,
 }: Props) {
+  // useTranslation abonne ce composant aux changements de langue i18next.
+  // Quand LanguageDropdown appelle i18n.changeLanguage(), le modal re-render automatiquement.
+  const { t, i18n } = useTranslation();
+  const isFr = i18n.language?.startsWith('fr');
+
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === total - 1;
+
+  const displayTitle    = isFr && popup.titleFr    ? popup.titleFr    : popup.title;
+  const displayContent  = isFr && popup.contentFr  ? popup.contentFr  : popup.content;
+  const displayImageUrl = isFr && popup.imageUrlFr ? popup.imageUrlFr : popup.imageUrl;
 
   return (
     <BasicModal
@@ -36,22 +45,19 @@ export function AnnouncementPopupModal({
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 relative bg-gray-100 p-4 rounded-md">
-          {/* Sélecteur de langue */}
           <LanguageDropdown />
-          {/* Titre centré */}
           <h2 className="flex-1 mx-4 text-xl font-bold bnpp-color-green text-center">
             {t('CommsGptTips')}
           </h2>
-          {/* Bouton de fermeture du parent */}
           <ModalCloseButton />
         </div>
 
         {/* Titre astuce */}
         <h3 className="text-lg font-semibold mb-4">
-          {popup.title}
+          {displayTitle}
         </h3>
 
-        {/* Body 60/40 — responsive, évite le débordement vertical */}
+        {/* Body 60/40 */}
         <div className="flex flex-col md:flex-row flex-1 gap-4 min-h-0">
           <div
             className="
@@ -62,9 +68,9 @@ export function AnnouncementPopupModal({
               max-h-[350px]
             "
           >
-            {popup.imageUrl ? (
+            {displayImageUrl ? (
               <img
-                src={popup.imageUrl}
+                src={displayImageUrl}
                 alt=""
                 className="w-full h-full object-cover"
               />
@@ -79,7 +85,7 @@ export function AnnouncementPopupModal({
             <p className="font-bold text-base mb-2">Description</p>
             <div
               className="text-sm text-gray-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: popup.content }}
+              dangerouslySetInnerHTML={{ __html: displayContent }}
             />
           </div>
         </div>
