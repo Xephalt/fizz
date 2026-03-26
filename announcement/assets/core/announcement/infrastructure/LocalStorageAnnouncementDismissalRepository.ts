@@ -31,7 +31,7 @@ function readRecord(id: string): DismissalRecord | null {
 function buildRecord(popup: AnnouncementPopup): string {
   const record: DismissalRecord = {
     dismissedAt: Date.now(),
-    forcedResetAtSnapshot: popup.forcedResetAt,
+    forcedResetAtSnapshot: popup.forcedResetAt ?? null,  // undefined → null pour garantir la sérialisation JSON
   }
   return JSON.stringify(record)
 }
@@ -41,9 +41,10 @@ function isDismissedPopup(popup: AnnouncementPopup): boolean {
   if (record === null) return false
 
   // Force reset : si forcedResetAt a changé depuis le dernier dismiss → réafficher.
-  // On compare les valeurs (strings ou null), pas des timestamps,
-  // donc aucune sensibilité aux décalages d'horloge navigateur/serveur.
-  if (popup.forcedResetAt !== record.forcedResetAtSnapshot) return false
+  // On normalise undefined → null des deux côtés pour gérer les anciens records sans la clé.
+  const currentForcedReset = popup.forcedResetAt ?? null
+  const snapshotForcedReset = record.forcedResetAtSnapshot ?? null
+  if (currentForcedReset !== snapshotForcedReset) return false
 
   // Récurrence : si le TTL est expiré → réafficher
   if (popup.recurrenceSeconds !== null) {
