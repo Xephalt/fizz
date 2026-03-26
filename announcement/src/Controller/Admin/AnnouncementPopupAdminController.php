@@ -51,7 +51,7 @@ final class AnnouncementPopupAdminController extends AbstractController
                 titleFr: $data['titleFr'] ?? null,
                 contentFr: $data['contentFr'] ?? null,
                 imageUrlFr: null,
-                recurrenceSeconds: ($data['recurrenceSeconds'] ?: null),
+                recurrenceSeconds: ($data['recurrenceSeconds'] ? (int) $data['recurrenceSeconds'] : null),
             );
 
             if ($data['isActive']) {
@@ -88,16 +88,19 @@ final class AnnouncementPopupAdminController extends AbstractController
         }
 
         $form = $this->createForm(AnnouncementPopupFormType::class, [
-            'title'              => $popup->getTitle(),
-            'titleFr'            => $popup->getTitleFr(),
-            'content'            => $popup->getContent(),
-            'contentFr'          => $popup->getContentFr(),
-            'imageUrl'           => $popup->getImageUrl(),
-            'imageUrlFr'         => $popup->getImageUrlFr(),
-            'isActive'           => $popup->isActive(),
-            'priority'           => $popup->getPriority(),
-            // 0 = sentinelle "jamais" car ChoiceType ne gère pas null comme valeur sélectionnée
-            'recurrenceSeconds'  => $popup->getRecurrenceSeconds() ?? 0,
+            'title'             => $popup->getTitle(),
+            'titleFr'           => $popup->getTitleFr(),
+            'content'           => $popup->getContent(),
+            'contentFr'         => $popup->getContentFr(),
+            // imageUrl/imageUrlFr sont FileType mapped=>false : ne JAMAIS passer
+            // de string ici — Symfony lève une TransformationFailedException interne
+            // qui corrompt silencieusement getData() pour tout le formulaire.
+            'isActive'          => $popup->isActive(),
+            'priority'          => $popup->getPriority(),
+            // Valeur string pour matcher les choices string du FormType
+            'recurrenceSeconds' => $popup->getRecurrenceSeconds() !== null
+                ? (string) $popup->getRecurrenceSeconds()
+                : '0',
         ]);
 
         $form->handleRequest($request);
@@ -113,7 +116,7 @@ final class AnnouncementPopupAdminController extends AbstractController
                 titleFr: $data['titleFr'] ?? null,
                 contentFr: $data['contentFr'] ?? null,
                 imageUrlFr: $popup->getImageUrlFr(),
-                recurrenceSeconds: ($data['recurrenceSeconds'] ?: null),
+                recurrenceSeconds: ($data['recurrenceSeconds'] ? (int) $data['recurrenceSeconds'] : null),
             );
 
             $data['isActive'] ? $popup->activate() : $popup->deactivate();
