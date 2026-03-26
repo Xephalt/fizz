@@ -76,20 +76,20 @@
             {{ form_end(form) }}
 
             {# FORCE RESET — form séparé car action différente #}
+            {% set confirmMsg = locale == 'fr' ? 'Forcer le réaffichage pour tous les utilisateurs ?' : 'Force re-display for all users?' %}
+            {% set descMsg = locale == 'fr' ? 'Réaffiche cette popup à tous les utilisateurs, même ceux qui l\'ont déjà vue.' : 'Re-displays this popup to all users, even those who already dismissed it.' %}
             <hr class="my-3 border-gray-300">
             <div class="d-flex align-items-center gap-3">
                 <form method="post" action="{{ path('admin_announcement_popup_force_reset', { id: popup.id }) }}" class="mb-0">
                     <input type="hidden" name="_token" value="{{ csrf_token('force_reset_announcement_' ~ popup.id) }}">
                     <button type="submit" class="btn btn-warning px-4"
-                            onclick="return confirm('{{ locale == \'fr\' ? \'Forcer le réaffichage pour tous les utilisateurs ?\' : \'Force re-display for all users?\' }}')">
+                            onclick="return confirm('{{ confirmMsg }}')">
                         <i class="fa fa-refresh me-1"></i>
                         {{ locale == 'fr' ? 'Forcer le réaffichage' : 'Force re-display' }}
                     </button>
                 </form>
                 <small class="text-muted">
-                    {{ locale == 'fr'
-                        ? 'Réaffiche cette popup à tous les utilisateurs, même ceux qui l\'ont déjà vue.'
-                        : 'Re-displays this popup to all users, even those who already dismissed it.' }}
+                    {{ descMsg }}
                     {% if popup.forcedResetAt %}
                         <br><span class="text-secondary">
                             {{ locale == 'fr' ? 'Dernier reset :' : 'Last reset:' }}
