@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function AnnouncementPopupProvider({ children }: Props) {
-  const { current, queue, currentIndex, next, prev, finish, finishAll } = useAnnouncementPopups()
+  const { current, queue, currentIndex, next, prev, finish, finishAll, close } = useAnnouncementPopups()
 
   return (
     <>
@@ -21,6 +21,7 @@ export function AnnouncementPopupProvider({ children }: Props) {
           onPrev={prev}
           onFinish={finish}
           onFinishAll={finishAll}
+          onClose={close}
         />
       )}
     </>

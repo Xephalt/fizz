@@ -9,6 +9,7 @@ interface UseAnnouncementPopupsReturn {
   prev: () => void
   finish: () => void
   finishAll: () => Promise<void>
+  close: () => void
 }
 
 export function useAnnouncementPopups(): UseAnnouncementPopupsReturn {
@@ -21,42 +22,42 @@ export function useAnnouncementPopups(): UseAnnouncementPopupsReturn {
     initialized.current = true
 
     getVisibleAnnouncementPopups()
-      .then((popups) => {
-        setQueue(popups)
-        // La première popup est visible immédiatement → on la dismiss
-        if (popups.length > 0) {
-          dismiss(popups[0].id)
-        }
-      })
+      .then((popups) => setQueue(popups))
       .catch(() => setQueue([]))
   }, [])
 
   const current = queue[currentIndex] ?? null
 
+  // Next : dismiss la popup courante (vue), puis avance
   const next = () => {
     if (currentIndex < queue.length - 1) {
-      const nextIndex = currentIndex + 1
-      // La popup suivante devient visible → on la dismiss
-      dismiss(queue[nextIndex].id)
-      setCurrentIndex(nextIndex)
+      dismiss(queue[currentIndex].id)
+      setCurrentIndex((i) => i + 1)
     }
   }
 
   const prev = () => {
     if (currentIndex > 0) {
-      // On revient en arrière — déjà vue, déjà dismissée, rien à faire
       setCurrentIndex((i) => i - 1)
     }
   }
 
-  // Ferme la modale (popups non vues restent disponibles au prochain reload)
-  const finish = () => setQueue([])
+  // Terminer (dernière popup) : dismiss la courante + ferme
+  const finish = () => {
+    if (current) {
+      dismiss(current.id)
+    }
+    setQueue([])
+  }
 
-  // Ferme ET dismiss toutes les popups restantes — utilisé par la croix / fermeture explicite
+  // Do not display anymore : dismissAll + ferme
   const finishAll = async () => {
     await dismissAll()
     setQueue([])
   }
 
-  return { current, queue, currentIndex, next, prev, finish, finishAll }
+  // Croix : ferme sans rien dismiss — au reload tout réapparaît
+  const close = () => setQueue([])
+
+  return { current, queue, currentIndex, next, prev, finish, finishAll, close }
 }
