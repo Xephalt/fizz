@@ -105,6 +105,17 @@ final class AnnouncementPopupAdminController extends AbstractController
 
         $form->handleRequest($request);
 
+        // 🔍 DEBUG TEMPORAIRE — à supprimer après diagnostic
+        if ($request->isMethod('POST')) {
+            dd([
+                'isSubmitted'  => $form->isSubmitted(),
+                'isValid'      => $form->isValid(),
+                'errors'       => (string) $form->getErrors(true, true),
+                'formData'     => $form->isSubmitted() ? $form->getData() : 'not submitted',
+                'rawPostKeys'  => array_keys($request->request->all()),
+            ]);
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
