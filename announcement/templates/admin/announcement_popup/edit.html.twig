@@ -1,12 +1,83 @@
-{% extends 'base.html.twig' %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block body %}
-<div class="container mt-4">
-    <h1>Éditer : {{ popup.title }}</h1>
-    <a href="{{ path('admin_announcement_popup_index') }}" class="btn btn-secondary mb-3">← Retour</a>
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
-    {{ form_end(form) }}
+{# Titre #}
+{% block content_title %}
+    <h1 class="h4 mb-0">
+        <i class="fa fa-pencil me-2 text-secondary"></i>
+        {{ locale == 'fr' ? 'Modifier' : 'Edit' }}
+        <span class="text-muted fw-normal">{{ popup.title }}</span>
+    </h1>
+{% endblock %}
+
+{# Bouton retour #}
+{% block page_actions %}
+    <a href="{{ path('admin', { routeName: 'admin_announcement_popup_index' }) }}"
+       class="btn btn-outline-secondary btn-sm">
+        <i class="fa fa-arrow-left me-1"></i>
+        {{ locale == 'fr' ? 'Retour' : 'Back' }}
+    </a>
+{% endblock %}
+
+{% block main %}
+<div class="container p-3 d-flex flex-column gap-3">
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+
+            {{ form_start(form, { attr: { class: 'row g-3' } }) }}
+
+            {# ENGLISH #}
+            <div class="col-12">
+                <h6 class="text-uppercase text-muted fw-semibold mb-2"
+                    style="font-size:.75rem; letter-spacing:.08em;">
+                    <i class="fa fa-globe me-1"></i>English
+                </h6>
+            </div>
+
+            <div class="col-md-8">{{ form_row(form.title) }}</div>
+            <div class="col-md-4">{{ form_row(form.imageUrl) }}</div>
+            <div class="col-12">{{ form_row(form.content) }}</div>
+
+            <hr class="my-2 border-gray-300">
+
+            {# FRENCH #}
+            <div class="col-12">
+                <h6 class="text-uppercase text-muted fw-semibold mb-2"
+                    style="font-size:.75rem; letter-spacing:.08em;">
+                    <i class="fa fa-globe me-1"></i>Français
+                </h6>
+            </div>
+
+            <div class="col-md-8">{{ form_row(form.titleFr) }}</div>
+            <div class="col-md-4">{{ form_row(form.imageUrlFr) }}</div>
+            <div class="col-12">{{ form_row(form.contentFr) }}</div>
+
+            <hr class="my-2 border-gray-300">
+
+            {# AUTRES CHAMPS #}
+            <div class="col-md-3">
+                {{ form_row(form.priority, { value: popup.priority }) }}
+            </div>
+
+            <div class="col-md-3 d-flex align-items-center pt-3">
+                {{ form_row(form.isActive) }}
+            </div>
+
+            <div class="col-12 mt-2">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="fa fa-save me-1"></i>
+                    {{ locale == 'fr' ? 'Enregistrer' : 'Save' }}
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+
+        </div>
+    </div>
 </div>
+
+<style>
+    .cke_notifications_area {
+        display: none;
+    }
+</style>
 {% endblock %}
