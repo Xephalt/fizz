@@ -85,8 +85,11 @@ final class AnnouncementPopupFormType extends AbstractType
             ->add('recurrenceSeconds', ChoiceType::class, [
                 'label'    => 'Récurrence',
                 'required' => false,
+                // Note: on utilise 0 comme sentinelle pour "jamais" car ChoiceType
+                // ne gère pas fiablement null comme valeur sélectionnée.
+                // La conversion 0 <-> null se fait dans le controller.
                 'choices'  => [
-                    'Jamais (vue une seule fois)' => null,
+                    'Jamais (vue une seule fois)' => 0,
                     '3 heures'                    => 10800,
                     '1 jour'                      => 86400,
                     '3 jours'                     => 259200,

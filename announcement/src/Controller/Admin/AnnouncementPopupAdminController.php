@@ -51,7 +51,7 @@ final class AnnouncementPopupAdminController extends AbstractController
                 titleFr: $data['titleFr'] ?? null,
                 contentFr: $data['contentFr'] ?? null,
                 imageUrlFr: null,
-                recurrenceSeconds: $data['recurrenceSeconds'] ?? null,
+                recurrenceSeconds: ($data['recurrenceSeconds'] ?: null),
             );
 
             if ($data['isActive']) {
@@ -96,7 +96,8 @@ final class AnnouncementPopupAdminController extends AbstractController
             'imageUrlFr'         => $popup->getImageUrlFr(),
             'isActive'           => $popup->isActive(),
             'priority'           => $popup->getPriority(),
-            'recurrenceSeconds'  => $popup->getRecurrenceSeconds(),
+            // 0 = sentinelle "jamais" car ChoiceType ne gère pas null comme valeur sélectionnée
+            'recurrenceSeconds'  => $popup->getRecurrenceSeconds() ?? 0,
         ]);
 
         $form->handleRequest($request);
@@ -112,7 +113,7 @@ final class AnnouncementPopupAdminController extends AbstractController
                 titleFr: $data['titleFr'] ?? null,
                 contentFr: $data['contentFr'] ?? null,
                 imageUrlFr: $popup->getImageUrlFr(),
-                recurrenceSeconds: $data['recurrenceSeconds'] ?? null,
+                recurrenceSeconds: ($data['recurrenceSeconds'] ?: null),
             );
 
             $data['isActive'] ? $popup->activate() : $popup->deactivate();
