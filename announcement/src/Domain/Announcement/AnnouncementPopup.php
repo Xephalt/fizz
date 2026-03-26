@@ -2,6 +2,8 @@
 
 namespace App\Domain\Announcement;
 
+use InvalidArgumentException;
+
 final class AnnouncementPopup
 {
     private function __construct(
@@ -16,8 +18,7 @@ final class AnnouncementPopup
         private int $priority,
         private ?int $recurrenceSeconds,
         private ?\DateTimeImmutable $forcedResetAt,
-    ) {
-    }
+    ) {}
 
     public static function create(
         string $id,
@@ -31,13 +32,15 @@ final class AnnouncementPopup
         ?int $recurrenceSeconds = null,
     ): self {
         if (trim($title) === '') {
-            throw new \InvalidArgumentException('Title cannot be empty');
+            throw new InvalidArgumentException('Title cannot be empty');
         }
+
         if (trim($content) === '') {
-            throw new \InvalidArgumentException('Content cannot be empty');
+            throw new InvalidArgumentException('Content cannot be empty');
         }
+
         if ($priority < 0) {
-            throw new \InvalidArgumentException('Priority must be a positive integer');
+            throw new InvalidArgumentException('Priority must be a positive integer');
         }
 
         return new self(
@@ -65,8 +68,8 @@ final class AnnouncementPopup
         ?string $imageUrlFr,
         bool $isActive,
         int $priority,
-        ?int $recurrenceSeconds,
-        ?\DateTimeImmutable $forcedResetAt,
+        ?int $recurrenceSeconds = null,
+        ?\DateTimeImmutable $forcedResetAt = null,
     ): self {
         return new self(
             id: $id,
@@ -83,12 +86,14 @@ final class AnnouncementPopup
         );
     }
 
-    public function activate(): void { $this->isActive = true; }
-    public function deactivate(): void { $this->isActive = false; }
-
-    public function forceReset(): void
+    public function activate(): void
     {
-        $this->forcedResetAt = new \DateTimeImmutable();
+        $this->isActive = true;
+    }
+
+    public function deactivate(): void
+    {
+        $this->isActive = false;
     }
 
     public function update(
@@ -102,13 +107,15 @@ final class AnnouncementPopup
         ?int $recurrenceSeconds = null,
     ): void {
         if (trim($title) === '') {
-            throw new \InvalidArgumentException('Title cannot be empty');
+            throw new InvalidArgumentException('Title cannot be empty');
         }
+
         if (trim($content) === '') {
-            throw new \InvalidArgumentException('Content cannot be empty');
+            throw new InvalidArgumentException('Content cannot be empty');
         }
+
         if ($priority < 0) {
-            throw new \InvalidArgumentException('Priority must be a positive integer');
+            throw new InvalidArgumentException('Priority must be a positive integer');
         }
 
         $this->title = $title;
@@ -119,6 +126,21 @@ final class AnnouncementPopup
         $this->imageUrlFr = $imageUrlFr;
         $this->priority = $priority;
         $this->recurrenceSeconds = $recurrenceSeconds;
+    }
+
+    public function forceReset(): void
+    {
+        $this->forcedResetAt = new \DateTimeImmutable();
+    }
+
+    public function setImageUrl(?string $imageUrl): void
+    {
+        $this->imageUrl = $imageUrl;
+    }
+
+    public function setImageUrlFr(?string $imageUrlFr): void
+    {
+        $this->imageUrlFr = $imageUrlFr;
     }
 
     public function getId(): string { return $this->id; }
@@ -132,4 +154,13 @@ final class AnnouncementPopup
     public function getPriority(): int { return $this->priority; }
     public function getRecurrenceSeconds(): ?int { return $this->recurrenceSeconds; }
     public function getForcedResetAt(): ?\DateTimeImmutable { return $this->forcedResetAt; }
+
+    public function setPriority(int $priority): void
+    {
+        if ($priority < 0) {
+            throw new InvalidArgumentException('Priority must be a positive integer');
+        }
+
+        $this->priority = $priority;
+    }
 }
