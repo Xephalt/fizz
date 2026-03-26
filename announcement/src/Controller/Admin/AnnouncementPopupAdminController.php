@@ -124,14 +124,6 @@ final class AnnouncementPopupAdminController extends AbstractController
             $this->handleImageUpload($form, $popup);
 
             $this->repository->save($popup);
-
-            // 🔍 DEBUG TEMPORAIRE — à supprimer après confirmation
-            dd([
-                'savedPopupId'      => $popup->getId(),
-                'recurrenceSeconds' => $popup->getRecurrenceSeconds(),
-                'forcedResetAt'     => $popup->getForcedResetAt()?->format('Y-m-d H:i:s'),
-            ]);
-
             $this->addFlash('success', 'Popup mis à jour.');
 
             return $this->redirectToRoute('admin', [

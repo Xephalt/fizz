@@ -12,10 +12,18 @@ function readRecord(id: string): DismissalRecord | null {
   const stored = localStorage.getItem(`${DISMISSED_KEY_PREFIX}${id}`)
   if (stored === null) return null
   try {
-    return JSON.parse(stored) as DismissalRecord
+    const parsed = JSON.parse(stored)
+    // Vérification stricte du format attendu :
+    // JSON.parse('true')   → true   (boolean, pas d'objet)
+    // JSON.parse('123456') → number (ancien format timestamp)
+    // Ces deux cas NE lèvent PAS d'exception mais ne sont pas des DismissalRecord valides.
+    // Sans cette vérification, record.forcedResetAtSnapshot vaut `undefined`,
+    // et `null !== undefined` déclenche un force-reset spurieux à chaque chargement.
+    if (typeof parsed !== 'object' || parsed === null || typeof parsed.dismissedAt !== 'number') {
+      return null
+    }
+    return parsed as DismissalRecord
   } catch {
-    // Ancien format (string brute) → on considère comme non-dismissed
-    // pour que l'utilisateur revoie la popup une fois après la mise à jour
     return null
   }
 }
