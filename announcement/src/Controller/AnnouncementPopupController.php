@@ -22,14 +22,16 @@ final class AnnouncementPopupController extends AbstractController
         $popups = ($this->handler)(new GetActiveAnnouncementsQuery());
 
         return $this->json(array_map(fn($popup) => [
-            'id'          => $popup->getId(),
-            'title'       => $popup->getTitle(),
-            'titleFr'     => $popup->getTitleFr(),
-            'content'     => $popup->getContent(),
-            'contentFr'   => $popup->getContentFr(),
-            'imageUrl'    => $popup->getImageUrl(),
-            'imageUrlFr'  => $popup->getImageUrlFr(),
-            'priority'    => $popup->getPriority(),
+            'id'                 => $popup->getId(),
+            'title'              => $popup->getTitle(),
+            'titleFr'            => $popup->getTitleFr(),
+            'content'            => $popup->getContent(),
+            'contentFr'          => $popup->getContentFr(),
+            'imageUrl'           => $popup->getImageUrl(),
+            'imageUrlFr'         => $popup->getImageUrlFr(),
+            'priority'           => $popup->getPriority(),
+            'recurrenceSeconds'  => $popup->getRecurrenceSeconds(),
+            'forcedResetAt'      => $popup->getForcedResetAt()?->format(\DateTimeInterface::ATOM),
         ], $popups));
     }
 }

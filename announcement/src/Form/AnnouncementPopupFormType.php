@@ -5,6 +5,7 @@ namespace App\Form;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -54,6 +55,19 @@ final class AnnouncementPopupFormType extends AbstractType
                 'data'        => 0,
                 'constraints' => [new PositiveOrZero(message: 'La priorité doit être positive ou nulle')],
                 'help'        => 'Plus le chiffre est petit, plus le popup apparaît en premier (0 = premier)',
+            ])
+            ->add('recurrenceSeconds', ChoiceType::class, [
+                'label'    => 'Récurrence',
+                'required' => false,
+                'choices'  => [
+                    'Jamais (vue une seule fois)' => null,
+                    '3 heures'                    => 10800,
+                    '1 jour'                      => 86400,
+                    '3 jours'                     => 259200,
+                    '1 semaine'                   => 604800,
+                    '1 mois (30 jours)'           => 2592000,
+                ],
+                'help' => 'Délai après lequel la popup réapparaît pour un utilisateur qui l\'a déjà vue.',
             ]);
     }
 

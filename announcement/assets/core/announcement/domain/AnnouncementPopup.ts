@@ -7,4 +7,6 @@ export interface AnnouncementPopup {
   imageUrl: string | null
   imageUrlFr: string | null
   priority: number
+  recurrenceSeconds: number | null
+  forcedResetAt: string | null
 }

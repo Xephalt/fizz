@@ -45,6 +45,7 @@ final class AnnouncementPopupAdminController extends AbstractController
                 titleFr: $data['titleFr'] ?: null,
                 contentFr: $data['contentFr'] ?: null,
                 imageUrlFr: $data['imageUrlFr'] ?: null,
+                recurrenceSeconds: $data['recurrenceSeconds'] ?: null,
             );
 
             if ($data['isActive']) {
@@ -70,14 +71,15 @@ final class AnnouncementPopupAdminController extends AbstractController
         }
 
         $form = $this->createForm(AnnouncementPopupFormType::class, [
-            'title'      => $popup->getTitle(),
-            'titleFr'    => $popup->getTitleFr(),
-            'content'    => $popup->getContent(),
-            'contentFr'  => $popup->getContentFr(),
-            'imageUrl'   => $popup->getImageUrl(),
-            'imageUrlFr' => $popup->getImageUrlFr(),
-            'isActive'   => $popup->isActive(),
-            'priority'   => $popup->getPriority(),
+            'title'              => $popup->getTitle(),
+            'titleFr'            => $popup->getTitleFr(),
+            'content'            => $popup->getContent(),
+            'contentFr'          => $popup->getContentFr(),
+            'imageUrl'           => $popup->getImageUrl(),
+            'imageUrlFr'         => $popup->getImageUrlFr(),
+            'isActive'           => $popup->isActive(),
+            'priority'           => $popup->getPriority(),
+            'recurrenceSeconds'  => $popup->getRecurrenceSeconds(),
         ]);
 
         $form->handleRequest($request);
@@ -93,6 +95,7 @@ final class AnnouncementPopupAdminController extends AbstractController
                 titleFr: $data['titleFr'] ?: null,
                 contentFr: $data['contentFr'] ?: null,
                 imageUrlFr: $data['imageUrlFr'] ?: null,
+                recurrenceSeconds: $data['recurrenceSeconds'] ?: null,
             );
 
             $data['isActive'] ? $popup->activate() : $popup->deactivate();
@@ -135,5 +138,25 @@ final class AnnouncementPopupAdminController extends AbstractController
         $this->repository->save($popup);
 
         return $this->json(['isActive' => $popup->isActive()]);
+    }
+
+    #[Route('/{id}/force-reset', name: 'force_reset', methods: ['POST'])]
+    public function forceReset(string $id, Request $request): Response
+    {
+        if (!$this->isCsrfTokenValid('force_reset_announcement_' . $id, $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $popup = $this->repository->findById($id);
+
+        if (!$popup) {
+            throw $this->createNotFoundException('Popup introuvable.');
+        }
+
+        $popup->forceReset();
+        $this->repository->save($popup);
+        $this->addFlash('success', 'Réaffichage forcé : les utilisateurs reverront cette popup.');
+
+        return $this->redirectToRoute('admin_announcement_popup_index');
     }
 }

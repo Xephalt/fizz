@@ -1,5 +1,7 @@
+import { AnnouncementPopup } from './AnnouncementPopup'
+
 export interface AnnouncementDismissalRepository {
-  isDismissed(id: string): boolean
-  dismiss(id: string): void
-  dismissAll(ids: string[]): void
+  isDismissed(popup: AnnouncementPopup): boolean
+  dismiss(popup: AnnouncementPopup): void
+  dismissAll(popups: AnnouncementPopup[]): void
 }

@@ -14,6 +14,8 @@ final class AnnouncementPopup
         private ?string $imageUrlFr,
         private bool $isActive,
         private int $priority,
+        private ?int $recurrenceSeconds,
+        private ?\DateTimeImmutable $forcedResetAt,
     ) {
     }
 
@@ -26,6 +28,7 @@ final class AnnouncementPopup
         ?string $titleFr = null,
         ?string $contentFr = null,
         ?string $imageUrlFr = null,
+        ?int $recurrenceSeconds = null,
     ): self {
         if (trim($title) === '') {
             throw new \InvalidArgumentException('Title cannot be empty');
@@ -47,6 +50,8 @@ final class AnnouncementPopup
             imageUrlFr: $imageUrlFr,
             isActive: false,
             priority: $priority,
+            recurrenceSeconds: $recurrenceSeconds,
+            forcedResetAt: null,
         );
     }
 
@@ -60,6 +65,8 @@ final class AnnouncementPopup
         ?string $imageUrlFr,
         bool $isActive,
         int $priority,
+        ?int $recurrenceSeconds,
+        ?\DateTimeImmutable $forcedResetAt,
     ): self {
         return new self(
             id: $id,
@@ -71,11 +78,18 @@ final class AnnouncementPopup
             imageUrlFr: $imageUrlFr,
             isActive: $isActive,
             priority: $priority,
+            recurrenceSeconds: $recurrenceSeconds,
+            forcedResetAt: $forcedResetAt,
         );
     }
 
     public function activate(): void { $this->isActive = true; }
     public function deactivate(): void { $this->isActive = false; }
+
+    public function forceReset(): void
+    {
+        $this->forcedResetAt = new \DateTimeImmutable();
+    }
 
     public function update(
         string $title,
@@ -85,6 +99,7 @@ final class AnnouncementPopup
         ?string $titleFr = null,
         ?string $contentFr = null,
         ?string $imageUrlFr = null,
+        ?int $recurrenceSeconds = null,
     ): void {
         if (trim($title) === '') {
             throw new \InvalidArgumentException('Title cannot be empty');
@@ -103,6 +118,7 @@ final class AnnouncementPopup
         $this->imageUrl = $imageUrl;
         $this->imageUrlFr = $imageUrlFr;
         $this->priority = $priority;
+        $this->recurrenceSeconds = $recurrenceSeconds;
     }
 
     public function getId(): string { return $this->id; }
@@ -114,4 +130,6 @@ final class AnnouncementPopup
     public function getImageUrlFr(): ?string { return $this->imageUrlFr; }
     public function isActive(): bool { return $this->isActive; }
     public function getPriority(): int { return $this->priority; }
+    public function getRecurrenceSeconds(): ?int { return $this->recurrenceSeconds; }
+    public function getForcedResetAt(): ?\DateTimeImmutable { return $this->forcedResetAt; }
 }

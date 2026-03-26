@@ -17,6 +17,7 @@
                 <th>Titre (EN)</th>
                 <th>Titre (FR)</th>
                 <th>Priorité</th>
+                <th>Récurrence</th>
                 <th>Actif</th>
                 <th>Actions</th>
             </tr>
@@ -27,6 +28,23 @@
                 <td>{{ popup.title }}</td>
                 <td>{{ popup.titleFr ?? '-' }}</td>
                 <td>{{ popup.priority }}</td>
+                <td>
+                    {% if popup.recurrenceSeconds is null %}
+                        Jamais
+                    {% elseif popup.recurrenceSeconds == 10800 %}
+                        3 heures
+                    {% elseif popup.recurrenceSeconds == 86400 %}
+                        1 jour
+                    {% elseif popup.recurrenceSeconds == 259200 %}
+                        3 jours
+                    {% elseif popup.recurrenceSeconds == 604800 %}
+                        1 semaine
+                    {% elseif popup.recurrenceSeconds == 2592000 %}
+                        1 mois
+                    {% else %}
+                        {{ popup.recurrenceSeconds }}s
+                    {% endif %}
+                </td>
                 <td>{{ popup.active ? '✅' : '❌' }}</td>
                 <td>
                     <a href="{{ path('admin_announcement_popup_edit', {id: popup.id}) }}" class="btn btn-sm btn-secondary">Éditer</a>
@@ -34,6 +52,10 @@
                         <button class="btn btn-sm btn-outline-secondary">
                             {{ popup.active ? 'Désactiver' : 'Activer' }}
                         </button>
+                    </form>
+                    <form method="post" action="{{ path('admin_announcement_popup_force_reset', {id: popup.id}) }}" style="display:inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('force_reset_announcement_' ~ popup.id) }}">
+                        <button class="btn btn-sm btn-warning" onclick="return confirm('Forcer le réaffichage pour tous les utilisateurs ?')">Forcer</button>
                     </form>
                     <form method="post" action="{{ path('admin_announcement_popup_delete', {id: popup.id}) }}" style="display:inline">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete_announcement_' ~ popup.id) }}">

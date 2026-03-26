@@ -31,7 +31,7 @@ export function useAnnouncementPopups(): UseAnnouncementPopupsReturn {
   // Next : dismiss la popup courante (vue), puis avance
   const next = () => {
     if (currentIndex < queue.length - 1) {
-      dismiss(queue[currentIndex].id)
+      dismiss(queue[currentIndex])
       setCurrentIndex((i) => i + 1)
     }
   }
@@ -45,7 +45,7 @@ export function useAnnouncementPopups(): UseAnnouncementPopupsReturn {
   // Terminer (dernière popup) : dismiss la courante + ferme
   const finish = () => {
     if (current) {
-      dismiss(current.id)
+      dismiss(current)
     }
     setQueue([])
   }

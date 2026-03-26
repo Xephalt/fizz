@@ -21,14 +21,16 @@ final class DoctrineAnnouncementPopupRepository implements AnnouncementPopupRepo
         );
 
         $data = [
-            'title'        => $popup->getTitle(),
-            'title_fr'     => $popup->getTitleFr(),
-            'content'      => $popup->getContent(),
-            'content_fr'   => $popup->getContentFr(),
-            'image_url'    => $popup->getImageUrl(),
-            'image_url_fr' => $popup->getImageUrlFr(),
-            'is_active'    => (int) $popup->isActive(),
-            'priority'     => $popup->getPriority(),
+            'title'              => $popup->getTitle(),
+            'title_fr'           => $popup->getTitleFr(),
+            'content'            => $popup->getContent(),
+            'content_fr'         => $popup->getContentFr(),
+            'image_url'          => $popup->getImageUrl(),
+            'image_url_fr'       => $popup->getImageUrlFr(),
+            'is_active'          => (int) $popup->isActive(),
+            'priority'           => $popup->getPriority(),
+            'recurrence_seconds' => $popup->getRecurrenceSeconds(),
+            'forced_reset_at'    => $popup->getForcedResetAt()?->format('Y-m-d H:i:s'),
         ];
 
         if ($exists) {
@@ -77,6 +79,10 @@ final class DoctrineAnnouncementPopupRepository implements AnnouncementPopupRepo
 
     private function hydrate(array $row): AnnouncementPopup
     {
+        $forcedResetAt = !empty($row['forced_reset_at'])
+            ? new \DateTimeImmutable($row['forced_reset_at'])
+            : null;
+
         return AnnouncementPopup::reconstitute(
             id: $row['id'],
             title: $row['title'],
@@ -87,6 +93,8 @@ final class DoctrineAnnouncementPopupRepository implements AnnouncementPopupRepo
             imageUrlFr: $row['image_url_fr'] ?? null,
             isActive: (bool) $row['is_active'],
             priority: (int) $row['priority'],
+            recurrenceSeconds: !empty($row['recurrence_seconds']) ? (int) $row['recurrence_seconds'] : null,
+            forcedResetAt: $forcedResetAt,
         );
     }
 }
